@@ -19,7 +19,6 @@ class Peliculas {
 }
 
 
-
 class Pelicula {
 
   double popularity;
@@ -69,6 +68,15 @@ class Pelicula {
     voteAverage      = jsonMap['vote_average'] / 1;
     overview         = jsonMap['overview'];
     releaseDate      = jsonMap['release_date'];
+  }
+
+  getPosterImg(){
+
+    if(posterPath == null) {
+      return 'https://i.ya-webdesign.com/images/image-not-available-png-19.png';
+    }else{
+      return 'https://image.tmdb.org/t/p/w500/$posterPath';
+    }
   }
 }
 
