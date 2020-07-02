@@ -48,6 +48,7 @@ class PeliculasProvider {
   Future<List<Pelicula>> getPopulares() async {
 
     if(_cargando) return [];
+
     _cargando = true;
 
     _popularesPage++;
@@ -65,7 +66,9 @@ class PeliculasProvider {
 
     _populares.addAll(respuesta);
     popularesSink(_populares);
+
     _cargando = false;
+
     return respuesta;
   }
 
