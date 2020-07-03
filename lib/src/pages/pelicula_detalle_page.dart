@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pelis_app_practica/src/models/pelicula_model.dart';
+import 'package:pelis_app_practica/src/providers/actores_provider.dart';
+import 'package:pelis_app_practica/src/models/actores_model.dart';
 
 class PeliculaDetalle extends StatelessWidget {
 
@@ -23,6 +25,7 @@ class PeliculaDetalle extends StatelessWidget {
                 _descripcion(pelicula),
                 _descripcion(pelicula),
                 _descripcion(pelicula),
+                _crearCasting(context,pelicula),
               ]
             ),
           ),
@@ -63,11 +66,14 @@ class PeliculaDetalle extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 15.0),
       child: Row(
         children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20.0),
-            child: Image(
-              image: NetworkImage(pelicula.getPosterImg()),
-              height: 150.0,
+          Hero(
+            tag: pelicula.id,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Image(
+                image: NetworkImage(pelicula.getPosterImg()),
+                height: 150.0,
+              ),
             ),
           ),
           SizedBox(width: 20.0,),
@@ -111,5 +117,67 @@ class PeliculaDetalle extends StatelessWidget {
         textAlign: TextAlign.justify,
       ),
     );
+  }
+
+  Widget _crearCasting(BuildContext context, Pelicula pelicula) {
+    final ActoresProvider actoresProvider = new ActoresProvider();
+
+    return FutureBuilder(
+      future: actoresProvider.getCast(pelicula.id.toString()),
+      builder: (context, AsyncSnapshot<List> snapshot) {
+
+        if(snapshot.hasData){
+          return _crearActoresPageView(snapshot.data);
+        }else{
+
+        return Center(child: CircularProgressIndicator(),);
+        }
+      },
+    );
+
+  }
+
+  Widget _crearActoresPageView(List<Actor> actores) {
+    return SizedBox(
+      height: 200.0,
+      child: PageView.builder(
+        pageSnapping: false,
+        controller: PageController(
+          viewportFraction: 0.3,
+          initialPage: 1,
+        ),
+        itemCount: actores.length,
+        itemBuilder: (context, i) => _crearTarjetaActor(actores[i], context)
+      ),
+    );
+
+  }
+
+   Widget _crearTarjetaActor(Actor actor, BuildContext context) {
+
+    return Container(
+        margin: EdgeInsets.only(right: 15.0),
+        child: Column(
+          children: <Widget>[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20.0) ,
+              child: FadeInImage(
+                placeholder: AssetImage('assets/img/no-image.jpg'), 
+                image: NetworkImage(actor.getProfileImg()),
+                fit: BoxFit.cover,
+                height: 160.0,
+              ),
+            ),
+            SizedBox(height: 5.0,),
+            Text(
+              actor.name,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.caption,
+            ),
+          ],
+        ),
+      );
+
+    
   }
 }
